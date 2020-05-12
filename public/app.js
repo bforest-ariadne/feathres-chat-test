@@ -9,6 +9,7 @@ client.configure(feathers.authentication({
 
 const login = async (credentials) => {
   try {
+    
     if (!credentials) {
       await client.reAuthenticate();
     } else {
@@ -17,6 +18,7 @@ const login = async (credentials) => {
         ...credentials
       });
     }
+    console.log('login successful');
     // show chat messages
     showChat();
   } catch (error) {
@@ -42,7 +44,7 @@ const loginHTML = /*html*/`
     </div>
   </div>
   <div class="row">
-    <div class = col-12 col-6-tablet push-3-tablet col-4-desktop push-4-desktop">
+    <div class ="col-12 col-6-tablet push-3-tablet col-4-desktop push-4-desktop">
       <form class="form">
         <fieldset>
           <input class="block" type="email" name="email" placeholder="email">
@@ -66,6 +68,7 @@ const loginHTML = /*html*/`
 `;
 
 const chatHTML = /*html*/`
+
 <main class="flex flex-column">
   <header class="title-bar flex flex-row flex-center">
     <div class="title-wrapper block center-element">
@@ -87,15 +90,87 @@ const chatHTML = /*html*/`
         </a>
       </footer>
     </aside>
+    
+    <div class="flex flex-column col col-9">
+    <main class="chat flex flex-column flex-1 clear"></main>
+
+    <form class="flex flex-row flex-space-between", id="send-message">
+      <input type="text" name="text" class="flex flex-1">
+      <button class="button button-primary">Send</button>
+    </form>
+    </div>
   </div>
 </main>
 `;
 
-const showChat = () => {
+const showChat = async () => {
+  // console.log('showChat');
   document.getElementById('app').innerHTML = chatHTML;
+
+  const messages = await client.service('messages').find({
+    query: {
+      $sort: { createdAt: -1 },
+      $limit: 25
+    }
+  });
+  messages.data.reverse().forEach(addMessage);
+
+  const users = await client.service('users').find();
+  // console.log('users', users.data);
+  users.data.forEach(addUser);
+  
+};
+
+const addMessage = message => {
+  const { user = {} } = message;
+  const chat = document.querySelector('.chat');
+
+  const text = message.text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  if (chat) {
+    chat.innerHTML += /*html*/`
+      <div class="message flex flex-row">
+        <img src="${user.avatar}" alt="${user.email}" class="avatar">
+        <div class="message=wrapper">
+        <p class="message-header">
+          <span class="username font-600">${user.email}</span>
+          <span class="sent-data font-300">${moment(message.createdAt).format('MMM Do, hh:mm:ss')}</span>
+        </p>
+        <p class="message-content font-300">${text}</p>
+        </div>
+      </div>
+    `;
+
+    chat.scrollTop = chat.scrollHeight - chat.clientHeight;
+  }
+};
+
+
+const addUser = user => {
+  // console.log('add user', user);
+  const userList = document .querySelector('.user-list');
+
+  if (userList) {
+    userList.innerHTML += /*html*/`
+      <li>
+        <a class="block relative" href="#">
+          <img src="${user.avatar}" class="avater">
+          <span class="absolute username">${user.email}</span>
+        </a>
+      </li>
+    `;
+
+    const userCount = document.querySelectorAll('.user-list li').length;
+
+    document.querySelector('.online-count').innerHTML = userCount;
+  }
 };
 
 const showLogin = (error) => {
+  console.log('showLogin');
   if (document.querySelectorAll('.login').length && error) {
     document.querySelector('.heading').insertAdjacentHTML('beforeend', `<p>There was an error: ${error.message}</p>`);
   } else {
@@ -128,3 +203,33 @@ addEventListener('#signup', 'click', async () => {
   await login(credentials);
 
 });
+
+addEventListener('#logout', 'click', async () => {
+  await client.logout();
+
+  document.getElementById('app').innerHTML = loginHTML;
+});
+
+addEventListener('#login', 'click', async () => {
+  const user = getCredentials();
+  await login(user);
+});
+
+addEventListener('#send-message', 'submit', async ev => {
+  const input = document.querySelector('[name="text"]');
+  
+  ev.preventDefault();
+
+  await client.service('messages').create({
+    text: input.value
+  });
+
+  input.value = '';
+});
+
+client.service('messages').on('created', addMessage);
+
+client.service('users').on('created', addUser);
+
+
+
