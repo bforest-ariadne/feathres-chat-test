@@ -1,4 +1,5 @@
 const socket = io();
+// let document = global.document;
 
 const client = feathers();
 client.configure(feathers.socketio(socket));
@@ -7,18 +8,25 @@ client.configure(feathers.authentication({
   storage: window.localStorage
 }));
 
+let userData;
+
 const login = async (credentials) => {
   try {
-    
+    let authResult;
     if (!credentials) {
-      await client.reAuthenticate();
+      authResult = await client.reAuthenticate();
     } else {
-      await client.authenticate({
+      authResult = await client.authenticate({
         strategy: 'local',
         ...credentials
       });
     }
-    console.log('login successful');
+    console.log('login successful', authResult);
+    userData = authResult.user;
+    await client.service('users').patch(userData._id, {
+      ...userData,
+      online: true
+    });
     // show chat messages
     showChat();
   } catch (error) {
@@ -150,19 +158,29 @@ const addMessage = message => {
 
 
 const addUser = user => {
-  // console.log('add user', user);
+  console.log('add user', user);
   const userList = document .querySelector('.user-list');
 
   if (userList) {
-    userList.innerHTML += /*html*/`
-      <li>
+
+    if (user.online) {
+      userList.innerHTML += /*html*/`
+      <li class="${user._id}">
         <a class="block relative" href="#">
           <img src="${user.avatar}" class="avater">
           <span class="absolute username">${user.email}</span>
         </a>
       </li>
     `;
-
+    } else {
+      console.log('user._id', user._id);
+      const userElement = userList.querySelector(`.${user._id}`);
+      if (userElement) {
+        userList.removeChild(userElement);
+      }
+      
+    }
+  
     const userCount = document.querySelectorAll('.user-list li').length;
 
     document.querySelector('.online-count').innerHTML = userCount;
@@ -205,7 +223,15 @@ addEventListener('#signup', 'click', async () => {
 });
 
 addEventListener('#logout', 'click', async () => {
+
+
+  await client.service('users').patch(userData._id, {
+    ...userData,
+    online: false
+  });
+
   await client.logout();
+  userData = null;
 
   document.getElementById('app').innerHTML = loginHTML;
 });
@@ -230,6 +256,7 @@ addEventListener('#send-message', 'submit', async ev => {
 client.service('messages').on('created', addMessage);
 
 client.service('users').on('created', addUser);
+client.service('users').on('patched', addUser);
 
 
 

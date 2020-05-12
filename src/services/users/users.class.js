@@ -13,11 +13,14 @@ exports.Users = class Users extends Service {
 
     const avatar = `${gravatarUrl}/${hash}?${query}`;
 
+    const online = false;
+
     const userData = {
       email,
       password,
       githubId,
-      avatar
+      avatar,
+      online
     };
 
     return super.create(userData, params);
