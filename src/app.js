@@ -5,6 +5,10 @@ const helmet = require('helmet');
 const cors = require('cors');
 const logger = require('./logger');
 
+const dontenv = require('dotenv');
+
+dontenv.config();
+
 const feathers = require('@feathersjs/feathers');
 const configuration = require('@feathersjs/configuration');
 const express = require('@feathersjs/express');
