@@ -18,7 +18,7 @@ const login = async (credentials) => {
       });
     }
     // show chat messages
-    console.log('signup / login success! go to chat window...');
+    showChat();
   } catch (error) {
     showLogin(error);
   }
@@ -28,14 +28,13 @@ const main = async () => {
   const auth = await login();
 
   console.log('User is authenticated', auth);
-
-  await client.logout();
 };
 
 console.log('app.js');
 main();
 
-const loginHTML = `
+const loginHTML = /*html*/`
+
 <main class="login container">
   <div class="row">
     <div class="col-12 col-6-tablet push-3-tablet text-center heading">
@@ -66,8 +65,35 @@ const loginHTML = `
 </main>
 `;
 
-const chatHTML = `
+const chatHTML = /*html*/`
+<main class="flex flex-column">
+  <header class="title-bar flex flex-row flex-center">
+    <div class="title-wrapper block center-element">
+      <img class="logo" src="http://feathersjs.com/img/feathers-logo-wide.png" alt="Feathers Logo">
+      <span class="title">Chat</span>
+    </div>
+  </header>
+  <div class="flex flex-row flex-1 clear">
+    <aside class="sidebar col col-3 flex flex-column flex-space-between">
+      <header class="flex flex-row flex-center">
+        <h4 class="font-300 text-center">
+        <span class="font-600 online-count">0</span> users
+        </h4>
+      </header>
+      <ul class="flex flex-column flex-1 list-unstyled user-list"></ul>
+      <footer class="flex flex-row flex_center">
+        <a href="#" id="logout" class="button button-primary">
+        Sign Out
+        </a>
+      </footer>
+    </aside>
+  </div>
+</main>
 `;
+
+const showChat = () => {
+  document.getElementById('app').innerHTML = chatHTML;
+};
 
 const showLogin = (error) => {
   if (document.querySelectorAll('.login').length && error) {
