@@ -182,14 +182,15 @@ const addMessage = message => {
 };
 
 const addControl = control => {
-  const { label, _id = '' } = control;
+  const { label, state, _id = '' } = control;
   const controlsList = document.querySelector('.controls-list');
+  console.log('state', state, typeof(state));
 
   const controlSwitchHTML = /*html*/`
     <li id="${_id}" style="margin: 1em; padding: 1em;">
-      <p>Scene1</p>
+      <p>${label}</p>
         <label class="switch">
-          <input type="checkbox" checked="checked">
+          <input type="checkbox" ${state ? 'checked': ''}>
           <span class="slider"></span>
         </label>
     </li>
@@ -263,9 +264,13 @@ const addEventListener = (selector, event, handler) => {
 addEventListener('[type="checkbox"]', 'click', async ev => {
   // await.client.service('controls').patch()
   const checkbox = ev.target.closest('[type="checkbox"]');
-  console.log('checkbox clicked', checkbox);
+  // console.log('checkbox clicked', checkbox);
+  const state = checkbox.checked;
+  const id = checkbox.closest('li').id;
 
-  // await client.service('controls').patch()
+  await client.service('controls').patch(id, {
+    state: state
+  });
 });
 
 addEventListener('#signup', 'click', async () => {
