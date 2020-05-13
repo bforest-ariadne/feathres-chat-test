@@ -87,21 +87,7 @@ const chatHTML = /*html*/`
   <header class="flex flex-row flex-center">
       <h3 class="font-300 text-center">Controls</h3>
   </header>
-  <ul class="flex flex-row flex-2 list-unstyled" style="padding: 0.5em;">
-    <li style="margin: 1em; padding: 1em;">
-      <p>Scene1</p>
-        <label class="switch">
-          <input type="checkbox" checked="checked">
-          <span class="slider"></span>
-        </label>
-    </li>
-    <li style="margin: 1em; padding: 1em;">
-      <p>Scene2</p>
-        <label class="switch">
-          <input type="checkbox" checked="checked">
-          <span class="slider"></span>
-        </label>
-    </li>
+  <ul class="flex flex-row flex-2 list-unstyled controls-list" style="padding: 0.5em;">
   </ul>
 </div>
   <div class="flex flex-row flex-1 clear">
@@ -146,6 +132,10 @@ const showChat = async () => {
   const users = await client.service('users').find();
   // console.log('users', users.data);
   users.data.forEach(addUser);
+
+
+  const controls = await client.service('controls').find();
+  controls.data.forEach(addControl);
   
 };
 
@@ -193,6 +183,7 @@ const addMessage = message => {
 
 const addControl = control => {
   const { label, _id = '' } = control;
+  const controlsList = document.querySelector('.controls-list');
 
   const controlSwitchHTML = /*html*/`
     <li id="${_id}" style="margin: 1em; padding: 1em;">
@@ -203,6 +194,11 @@ const addControl = control => {
         </label>
     </li>
   `;
+
+  if (controlsList) {
+    controlsList.innerHTML += controlSwitchHTML;
+  }
+
 };
 
 
@@ -264,6 +260,12 @@ const addEventListener = (selector, event, handler) => {
   });
 };
 
+addEventListener('[type="checkbox"]', 'click', async ev => {
+  // await.client.service('controls').patch()
+  const checkbox = ev.target.closest('[type="checkbox"]');
+  console.log('checkbox clicked', checkbox.checked);
+});
+
 addEventListener('#signup', 'click', async () => {
   const credentials = getCredentials();
   await client.service('users').create(credentials);
@@ -302,6 +304,8 @@ addEventListener('#send-message', 'submit', async ev => {
 
   input.value = '';
 });
+
+
 
 client.service('messages').on('created', addMessage);
 client.service('messages').on('removed', removeMessage);
