@@ -12,6 +12,12 @@
       "github": {
         "key": "GITHUB_CLIENT_ID",
         "secret": "GITHUB_CLIENT_SECRET" 
+      },
+      "google": {
+        "key": "GOOGLE_CLIENT_ID",
+        "secret": "GOOGLE_CLIENT_SECRET",
+        "scope": ["openid", "email"],
+        "nonce": true
       }
     },
     "entity": "user",

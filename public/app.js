@@ -69,6 +69,9 @@ const loginHTML = /*html*/`
         <a class="button button-primary block" href="/oauth/github">
           Login with Github
         </a>
+        <a class="button button-primary block" href="/oauth/google">
+          Login with Google
+        </a>
       </form>
     </div>
   </div>
