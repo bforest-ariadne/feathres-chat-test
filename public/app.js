@@ -174,7 +174,7 @@ const addMessage = message => {
 
 const addUser = user => {
   console.log('add user', user);
-  const userList = document .querySelector('.user-list');
+  const userList = document.querySelector('.user-list');
 
   if (userList) {
 
@@ -189,13 +189,12 @@ const addUser = user => {
         </a>
       </li>
     `;
-    } else if (!user.online) {
+    } else if (!user.online && userElements.length !== 0) {
       // console.log('user._id', user._id);
 
-      userElements.forEach( el => {
-        userList.removeChild(el);
-      });
-
+      for (let i = 0; i < userElements.length; i++ ) {
+        userList.removeChild( userElements[ i ] );
+      }
     }
   
     const userCount = document.querySelectorAll('.user-list li').length;
