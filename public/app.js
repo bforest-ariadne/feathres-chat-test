@@ -129,8 +129,23 @@ const showChat = async () => {
   
 };
 
+const removeMessage = (message) => {
+  console.log('removeMessage');
+  const { _id = '' } = message;
+  const chat = document.querySelector('.chat');
+
+  if (chat) {
+    const messageElement = chat.querySelector(`#${_id}`);
+    console.log('removeMessage chat', messageElement);
+    if (messageElement) {
+      console.log('removeChild');
+      chat.removeChild(messageElement);
+    }
+  }
+};
+
 const addMessage = message => {
-  const { user = {} } = message;
+  const { user = {}, _id = '' } = message;
   const chat = document.querySelector('.chat');
 
   const text = message.text
@@ -140,7 +155,7 @@ const addMessage = message => {
 
   if (chat) {
     chat.innerHTML += /*html*/`
-      <div class="message flex flex-row">
+      <div class="message flex flex-row" id="${_id}">
         <img src="${user.avatar}" alt="${user.email}" class="avatar">
         <div class="message=wrapper">
         <p class="message-header">
@@ -163,7 +178,9 @@ const addUser = user => {
 
   if (userList) {
 
-    if (user.online) {
+    const userElements = userList.getElementsByClassName(user._id);
+
+    if (user.online && userElements.length === 0) {
       userList.innerHTML += /*html*/`
       <li class="${user._id}">
         <a class="block relative" href="#">
@@ -172,13 +189,13 @@ const addUser = user => {
         </a>
       </li>
     `;
-    } else {
-      console.log('user._id', user._id);
-      const userElement = userList.querySelector(`.${user._id}`);
-      if (userElement) {
-        userList.removeChild(userElement);
-      }
-      
+    } else if (!user.online) {
+      // console.log('user._id', user._id);
+
+      userElements.forEach( el => {
+        userList.removeChild(el);
+      });
+
     }
   
     const userCount = document.querySelectorAll('.user-list li').length;
@@ -254,6 +271,7 @@ addEventListener('#send-message', 'submit', async ev => {
 });
 
 client.service('messages').on('created', addMessage);
+client.service('messages').on('removed', removeMessage);
 
 client.service('users').on('created', addUser);
 client.service('users').on('patched', addUser);
