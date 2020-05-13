@@ -8,7 +8,6 @@ module.exports = (options = {}) => {
 
     const addUser = async message => {
       const user = await app.service('users').get(message.userId);
-      console.log('user', user);
       return {
         ...message,
         user
