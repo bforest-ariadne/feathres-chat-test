@@ -76,7 +76,6 @@ const loginHTML = /*html*/`
 `;
 
 const chatHTML = /*html*/`
-
 <main class="flex flex-column">
   <header class="title-bar flex flex-row flex-center">
     <div class="title-wrapper block center-element">
@@ -84,6 +83,27 @@ const chatHTML = /*html*/`
       <span class="title">Chat</span>
     </div>
   </header>
+  <div class="flex flex-column col-9 flex-center">
+  <header class="flex flex-row flex-center">
+      <h3 class="font-300 text-center">Controls</h3>
+  </header>
+  <ul class="flex flex-row flex-2 list-unstyled" style="padding: 0.5em;">
+    <li style="margin: 1em; padding: 1em;">
+      <p>Scene1</p>
+        <label class="switch">
+          <input type="checkbox" checked="checked">
+          <span class="slider"></span>
+        </label>
+    </li>
+    <li style="margin: 1em; padding: 1em;">
+      <p>Scene2</p>
+        <label class="switch">
+          <input type="checkbox" checked="checked">
+          <span class="slider"></span>
+        </label>
+    </li>
+  </ul>
+</div>
   <div class="flex flex-row flex-1 clear">
     <aside class="sidebar col col-3 flex flex-column flex-space-between">
       <header class="flex flex-row flex-center">
@@ -169,6 +189,20 @@ const addMessage = message => {
 
     chat.scrollTop = chat.scrollHeight - chat.clientHeight;
   }
+};
+
+const addControl = control => {
+  const { label, _id = '' } = control;
+
+  const controlSwitchHTML = /*html*/`
+    <li id="${_id}" style="margin: 1em; padding: 1em;">
+      <p>Scene1</p>
+        <label class="switch">
+          <input type="checkbox" checked="checked">
+          <span class="slider"></span>
+        </label>
+    </li>
+  `;
 };
 
 
