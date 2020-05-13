@@ -263,7 +263,9 @@ const addEventListener = (selector, event, handler) => {
 addEventListener('[type="checkbox"]', 'click', async ev => {
   // await.client.service('controls').patch()
   const checkbox = ev.target.closest('[type="checkbox"]');
-  console.log('checkbox clicked', checkbox.checked);
+  console.log('checkbox clicked', checkbox);
+
+  // await client.service('controls').patch()
 });
 
 addEventListener('#signup', 'click', async () => {
