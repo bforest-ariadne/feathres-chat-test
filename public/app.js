@@ -135,7 +135,7 @@ const showChat = async () => {
 
 
   const controls = await client.service('controls').find();
-  controls.data.forEach(addControl);
+  controls.data.reverse().forEach(addControl);
   
 };
 
@@ -184,7 +184,7 @@ const addMessage = message => {
 const addControl = control => {
   const { label, state, _id = '' } = control;
   const controlsList = document.querySelector('.controls-list');
-  console.log('state', state, typeof(state));
+  // console.log('state', state, typeof(state));
 
   const controlSwitchHTML = /*html*/`
     <li id="${_id}" style="margin: 1em; padding: 1em;">
@@ -199,12 +199,18 @@ const addControl = control => {
   if (controlsList) {
     controlsList.innerHTML += controlSwitchHTML;
   }
+};
 
+const updateControl = control => {
+  const { _id, state } = control;
+  const controlParent = document.getElementById(_id);
+  const controlElement = controlParent.querySelector('input');
+
+  controlElement.checked = state;
 };
 
 
 const addUser = user => {
-  console.log('add user', user);
   const userList = document.querySelector('.user-list');
 
   if (userList) {
@@ -319,6 +325,7 @@ client.service('messages').on('removed', removeMessage);
 
 client.service('users').on('created', addUser);
 client.service('users').on('patched', addUser);
+client.service('controls').on('patched', updateControl);
 
 
 
