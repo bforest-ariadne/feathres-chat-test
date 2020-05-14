@@ -7,7 +7,9 @@ const query = 's=60';
 
 exports.Users = class Users extends Service {
   create(data, params) {
-    const { email, password,  githubId, openId, googleId} = data;
+    const { email, password,  githubId, openId, googleId, picture} = data;
+
+    console.log('pic', picture);
 
     const hash = crypto.createHash('md5').update(email.toLowerCase()).digest('hex');
 
