@@ -3,16 +3,17 @@ const checkPermissions = require('feathers-permissions');
 
 module.exports = {
   before: {
-    all: [ authenticate('jwt'),
-      checkPermissions({
-        roles: [ 'admin' ]
-      }) ],
+    all: [ authenticate('jwt')],
     find: [],
     get: [],
-    create: [],
+    create: [checkPermissions({
+      roles: [ 'admin' ]
+    })],
     update: [],
     patch: [],
-    remove: []
+    remove: [checkPermissions({
+      roles: [ 'admin' ]
+    })]
   },
 
   after: {
