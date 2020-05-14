@@ -9,7 +9,8 @@ class GithubStrategy extends OAuthStrategy {
 
     return {
       ...baseData,
-      email: userEmail
+      email: userEmail,
+      githubAvatar: profile.avatar
     };
   }
 }
@@ -22,7 +23,9 @@ class GoogleStrategy extends OAuthStrategy {
 
     return {
       ...baseData,
-      email: userEmail
+      email: userEmail,
+      picture: profile.picture,
+      hd: profile.hd
     };
   }
 }
